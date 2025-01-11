@@ -1,12 +1,9 @@
 import requests
 from rich import print
 import json
-from prod_data import *
 import time
 
 def create_session():
-
-
     headers = {
         'Accept': '*/*',
         'Accept-Language': 'en-US,en;q=0.9,eu;q=0.8',
@@ -25,8 +22,17 @@ def create_session():
         'sec-ch-ua-platform': '"Linux"',
     }
 
+    proxy = "http://USER329062-zone-custom:acb5f2@global.711proxy.com:10000"
+
+    # Set up the proxies dictionary
+    proxies = {
+        "http": proxy,
+        "https": proxy
+    }
+
     session = requests.Session()
     session.headers.update(headers)
+    session.proxies.update(proxies)
 
     return session
 
@@ -50,239 +56,246 @@ cookies = {
     'vd': 'VI40B86DCA558A4D22A72E089F351C8C64-1736525095693-1.1736525696.1736525095.153671455',
     }
 
-json_data = {
-    'pageUri': '/audio-video/headset/pr?sid=0pm%2Cfcn&p%5B%5D=facets.connectivity%255B%255D%3DBluetooth&sort=popularity&p%5B%5D=facets.rating%255B%255D%3D3%25E2%2598%2585%2B%2526%2Babove&p%5B%5D=facets.rating%255B%255D%3D4%25E2%2598%2585%2B%2526%2Babove&p%5B%5D=facets.price_range.from%3D599&p%5B%5D=facets.price_range.to%3DMax&p%5B%5D=facets.headphone_type%255B%255D%3DTrue%2BWireless&param=86&hpid=WqCPtE2MbDEYEbYbttXC1qp7_Hsxr70nj65vMAAFKlc%3D&ctx=eyJjYXJkQ29udGV4dCI6eyJhdHRyaWJ1dGVzIjp7InZhbHVlQ2FsbG91dCI6eyJtdWx0aVZhbHVlZEF0dHJpYnV0ZSI6eyJrZXkiOiJ2YWx1ZUNhbGxvdXQiLCJpbmZlcmVuY2VUeXBlIjoiVkFMVUVfQ0FMTE9VVCIsInZhbHVlcyI6WyJHcmFiIE5vdyJdLCJ2YWx1ZVR5cGUiOiJNVUxUSV9WQUxVRUQifX0sImhlcm9QaWQiOnsic2luZ2xlVmFsdWVBdHRyaWJ1dGUiOnsia2V5IjoiaGVyb1BpZCIsImluZmVyZW5jZVR5cGUiOiJQSUQiLCJ2YWx1ZSI6IkFDQ0gyV1dUWUFFWjhSRDQiLCJ2YWx1ZVR5cGUiOiJTSU5HTEVfVkFMVUVEIn19LCJ0aXRsZSI6eyJtdWx0aVZhbHVlZEF0dHJpYnV0ZSI6eyJrZXkiOiJ0aXRsZSIsImluZmVyZW5jZVR5cGUiOiJUSVRMRSIsInZhbHVlcyI6WyJCZXN0IFRydWV3aXJlbGVzcyBIZWFkcGhvbmVzIl0sInZhbHVlVHlwZSI6Ik1VTFRJX1ZBTFVFRCJ9fX19fQ%3D%3D&page=1',
-    'pageContext': {
-        'fetchSeoData': True,
-        'paginatedFetch': True,
-        'pageNumber': 1,
-        'paginationContextMap': {
-            'federator': {
-                'pageNumber': 2,
-                'AUGMENTATION_CARD': 0,
-                'CATEGORY_TREE': 0,
-                'SERVICEABILITY_CARD': 0,
-                'ADS': 20,
-                'MERCH_CARD': 0,
-                'FILTER_SORT_OPTIONS': 1,
-                'CCM_CONTENT_CARD': 0,
-                'relatedProductsCount': 0,
-                'PRODUCT': 60,
-                'SHOPPING_PREFERENCE': 0,
-                'previousContentTypeServed': 'SEARCH_FEEDBACK_CARD:0',
-                'EMPTY_SEARCH': 1,
-                'widgetOffset': 51,
-                'FILTER_FOOTER': 0,
-                'widgetStart': 50,
-                'store.path': '0pm/fcn',
-                'COMPARE_OPTIONS': 0,
-                'droppedContents': {
-                    'skippedProductsPerPage': {
-                        '2': [
-                            {
-                                'listingId': 'LSTACCGS2VSYQFQ4HTZOQJ1UU',
-                                'skippedReason': 'DEDUPE',
-                            },
-                            {
-                                'listingId': 'LSTACCG92R6QZWS9SYHR9KG4B',
-                                'skippedReason': 'DEDUPE',
-                            },
-                            {
-                                'listingId': 'LSTACCH3GFF7ATCGCGHKLHYMO',
-                                'skippedReason': 'DEDUPE',
-                            },
-                            {
-                                'listingId': 'LSTACCGRZSFXMYJVRZYQUDECT',
-                                'skippedReason': 'DEDUPE',
-                            },
+
+def write_data_in_file(url, session, pagenum):
+    json_data = {
+        'pageUri': '/audio-video/headset/pr?sid=0pm%2Cfcn&p%5B%5D=facets.connectivity%255B%255D%3DBluetooth&sort=popularity&p%5B%5D=facets.rating%255B%255D%3D3%25E2%2598%2585%2B%2526%2Babove&p%5B%5D=facets.rating%255B%255D%3D4%25E2%2598%2585%2B%2526%2Babove&p%5B%5D=facets.price_range.from%3D599&p%5B%5D=facets.price_range.to%3DMax&p%5B%5D=facets.headphone_type%255B%255D%3DTrue%2BWireless&param=86&hpid=WqCPtE2MbDEYEbYbttXC1qp7_Hsxr70nj65vMAAFKlc%3D&ctx=eyJjYXJkQ29udGV4dCI6eyJhdHRyaWJ1dGVzIjp7InZhbHVlQ2FsbG91dCI6eyJtdWx0aVZhbHVlZEF0dHJpYnV0ZSI6eyJrZXkiOiJ2YWx1ZUNhbGxvdXQiLCJpbmZlcmVuY2VUeXBlIjoiVkFMVUVfQ0FMTE9VVCIsInZhbHVlcyI6WyJHcmFiIE5vdyJdLCJ2YWx1ZVR5cGUiOiJNVUxUSV9WQUxVRUQifX0sImhlcm9QaWQiOnsic2luZ2xlVmFsdWVBdHRyaWJ1dGUiOnsia2V5IjoiaGVyb1BpZCIsImluZmVyZW5jZVR5cGUiOiJQSUQiLCJ2YWx1ZSI6IkFDQ0gyV1dUWUFFWjhSRDQiLCJ2YWx1ZVR5cGUiOiJTSU5HTEVfVkFMVUVEIn19LCJ0aXRsZSI6eyJtdWx0aVZhbHVlZEF0dHJpYnV0ZSI6eyJrZXkiOiJ0aXRsZSIsImluZmVyZW5jZVR5cGUiOiJUSVRMRSIsInZhbHVlcyI6WyJCZXN0IFRydWV3aXJlbGVzcyBIZWFkcGhvbmVzIl0sInZhbHVlVHlwZSI6Ik1VTFRJX1ZBTFVFRCJ9fX19fQ%3D%3D&page=1',
+        'pageContext': {
+            'fetchSeoData': True,
+            'paginatedFetch': True,
+            'pageNumber': pagenum,
+            'paginationContextMap': {
+                'federator': {
+                    'pageNumber': pagenum,
+                    'AUGMENTATION_CARD': 0,
+                    'CATEGORY_TREE': 0,
+                    'SERVICEABILITY_CARD': 0,
+                    'ADS': 20,
+                    'MERCH_CARD': 0,
+                    'FILTER_SORT_OPTIONS': 1,
+                    'CCM_CONTENT_CARD': 0,
+                    'relatedProductsCount': 0,
+                    'PRODUCT': 60,
+                    'SHOPPING_PREFERENCE': 0,
+                    'previousContentTypeServed': 'SEARCH_FEEDBACK_CARD:0',
+                    'EMPTY_SEARCH': 1,
+                    'widgetOffset': 51,
+                    'FILTER_FOOTER': 0,
+                    'widgetStart': 50,
+                    'store.path': '0pm/fcn',
+                    'COMPARE_OPTIONS': 0,
+                    'droppedContents': {
+                        'skippedProductsPerPage': {
+                            '2': [
+                                {
+                                    'listingId': 'LSTACCGS2VSYQFQ4HTZOQJ1UU',
+                                    'skippedReason': 'DEDUPE',
+                                },
+                                {
+                                    'listingId': 'LSTACCG92R6QZWS9SYHR9KG4B',
+                                    'skippedReason': 'DEDUPE',
+                                },
+                                {
+                                    'listingId': 'LSTACCH3GFF7ATCGCGHKLHYMO',
+                                    'skippedReason': 'DEDUPE',
+                                },
+                                {
+                                    'listingId': 'LSTACCGRZSFXMYJVRZYQUDECT',
+                                    'skippedReason': 'DEDUPE',
+                                },
+                            ],
+                        },
+                    },
+                    'INLINE_FILTER': 0,
+                    'SHOP_PRODUCT_CARD': 0,
+                    'FILTER_VALUES': 0,
+                    'BUTTON_LIST': 0,
+                    'productTypeClusterStart': 81,
+                    'cursor': '{"paginationCursor":{"cursorType":"djCursor","parentRequestId":"40a1d7f5-d5e1-4837-bbdc-c0bc51fc6c85","cacheKey":null,"offset":0,"hasMoreContent":true,"foldId":1,"foldSize":0,"servedFoldNumber":0,"servedWidgetCount":1,"rankedQueueSize":0,"paginatedContentProviders":null,"lastFold":false,"contentProvidersCursorMap":{"PCA":{"paginationCursor":{"cursorType":"contentProviderCursor","parentRequestId":"40a1d7f5-d5e1-4837-bbdc-c0bc51fc6c85","cacheKey":null,"offset":0,"hasMoreContent":true},"collectionMetaInfoList":[]}},"paginationType":null,"cachedSlotIds":null},"collectionMetaInfoList":[]}',
+                    'FILTER_NAVIGATION': 1,
+                    'productsOffset': 64,
+                    'LAYOUT_OPTIONS': 0,
+                    'FILTER_TAB': 0,
+                    'INLINE_GUIDE': 0,
+                    'MESSAGING_CARD': 0,
+                    'SERVICEABILITY_FILTER': 0,
+                    'ANNOUNCEMENTS_NAVIGATION': 0,
+                    'INLINE_VISUAL_CARD': 0,
+                    'feedbackMap': {
+                        'SEARCH_FEEDBACK_CARD': [
+                            '1',
                         ],
                     },
-                },
-                'INLINE_FILTER': 0,
-                'SHOP_PRODUCT_CARD': 0,
-                'FILTER_VALUES': 0,
-                'BUTTON_LIST': 0,
-                'productTypeClusterStart': 81,
-                'cursor': '{"paginationCursor":{"cursorType":"djCursor","parentRequestId":"40a1d7f5-d5e1-4837-bbdc-c0bc51fc6c85","cacheKey":null,"offset":0,"hasMoreContent":true,"foldId":1,"foldSize":0,"servedFoldNumber":0,"servedWidgetCount":1,"rankedQueueSize":0,"paginatedContentProviders":null,"lastFold":false,"contentProvidersCursorMap":{"PCA":{"paginationCursor":{"cursorType":"contentProviderCursor","parentRequestId":"40a1d7f5-d5e1-4837-bbdc-c0bc51fc6c85","cacheKey":null,"offset":0,"hasMoreContent":true},"collectionMetaInfoList":[]}},"paginationType":null,"cachedSlotIds":null},"collectionMetaInfoList":[]}',
-                'FILTER_NAVIGATION': 1,
-                'productsOffset': 64,
-                'LAYOUT_OPTIONS': 0,
-                'FILTER_TAB': 0,
-                'INLINE_GUIDE': 0,
-                'MESSAGING_CARD': 0,
-                'SERVICEABILITY_FILTER': 0,
-                'ANNOUNCEMENTS_NAVIGATION': 0,
-                'INLINE_VISUAL_CARD': 0,
-                'feedbackMap': {
-                    'SEARCH_FEEDBACK_CARD': [
-                        '1',
+                    'slot_list_ADS': [
+                        41,
+                        42,
+                        45,
+                        47,
+                        48,
+                        51,
+                        52,
+                        55,
+                        57,
+                        58,
+                        61,
+                        62,
+                        65,
+                        67,
+                        68,
+                        71,
+                        72,
+                        75,
+                        77,
+                        78,
                     ],
+                    'PAGINATION_BAR': 1,
+                    'CATEGORY_VALUES': 0,
+                    'priceSortSlots': [],
+                    'SHOP_CARD': 0,
+                    'topAds': 0,
+                    'recentlyShownAds': [
+                        {
+                            'listingId': 'LSTACCGTBG7NSGNKWY4CQRUSZ',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCH2WWTZUWTRNHPZ7SX0C',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCH6R7PZZYK3ZZG1IJYX6',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCGRZSFXMYJVRZYQUDECT',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCGSZCDZSXEHWW7EIAG17',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCGPW7JKY6HF3A65CG5KB',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCH3GFF7ATCGCGHKLHYMO',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCGQQ2TQGWRGRM4XKHJFU',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCH4V9R3JHCYNET8PIJNB',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCH3GFFRZ4FJZKM6Z47T9',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCGQQ2TFYGHWBYHV66FXJ',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCH6R7PYQXCJF8XHT12NM',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCGRNFMDTYGWMW9RGRKAD',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCGS2VSYQFQ4HTZ3WCF30',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCG9J7F2NMUB5H6PEDEKB',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCH238YMBHRNHHELZWUN0',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCGXYWD3FGKCHYGNJDZSN',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCG5BDHUHJCZ4CGYZPEN9',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCGQQ2T77EFW8HQXUHKMI',
+                            'shownExplanation': 'SHOWN',
+                        },
+                        {
+                            'listingId': 'LSTACCG92R6QZWS9SYHR9KG4B',
+                            'shownExplanation': 'SHOWN',
+                        },
+                    ],
+                    'FILTER_SORT_BOTTOM': 0,
+                    'CLEAR_FILTERS': 0,
+                    'TOP_FILTER': 0,
+                    'OFFER_HEADER_CARD': 0,
+                    'PLA_GROUP_CARD': 0,
+                    'layout': 'grid',
+                    'productsEnd': 0,
+                    'MULTI_CONTENT_CARD': 0,
+                    'SEARCH_FEEDBACK_CARD': 1,
                 },
-                'slot_list_ADS': [
-                    41,
-                    42,
-                    45,
-                    47,
-                    48,
-                    51,
-                    52,
-                    55,
-                    57,
-                    58,
-                    61,
-                    62,
-                    65,
-                    67,
-                    68,
-                    71,
-                    72,
-                    75,
-                    77,
-                    78,
-                ],
-                'PAGINATION_BAR': 1,
-                'CATEGORY_VALUES': 0,
-                'priceSortSlots': [],
-                'SHOP_CARD': 0,
-                'topAds': 0,
-                'recentlyShownAds': [
-                    {
-                        'listingId': 'LSTACCGTBG7NSGNKWY4CQRUSZ',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCH2WWTZUWTRNHPZ7SX0C',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCH6R7PZZYK3ZZG1IJYX6',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCGRZSFXMYJVRZYQUDECT',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCGSZCDZSXEHWW7EIAG17',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCGPW7JKY6HF3A65CG5KB',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCH3GFF7ATCGCGHKLHYMO',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCGQQ2TQGWRGRM4XKHJFU',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCH4V9R3JHCYNET8PIJNB',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCH3GFFRZ4FJZKM6Z47T9',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCGQQ2TFYGHWBYHV66FXJ',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCH6R7PYQXCJF8XHT12NM',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCGRNFMDTYGWMW9RGRKAD',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCGS2VSYQFQ4HTZ3WCF30',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCG9J7F2NMUB5H6PEDEKB',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCH238YMBHRNHHELZWUN0',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCGXYWD3FGKCHYGNJDZSN',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCG5BDHUHJCZ4CGYZPEN9',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCGQQ2T77EFW8HQXUHKMI',
-                        'shownExplanation': 'SHOWN',
-                    },
-                    {
-                        'listingId': 'LSTACCG92R6QZWS9SYHR9KG4B',
-                        'shownExplanation': 'SHOWN',
-                    },
-                ],
-                'FILTER_SORT_BOTTOM': 0,
-                'CLEAR_FILTERS': 0,
-                'TOP_FILTER': 0,
-                'OFFER_HEADER_CARD': 0,
-                'PLA_GROUP_CARD': 0,
-                'layout': 'grid',
-                'productsEnd': 0,
-                'MULTI_CONTENT_CARD': 0,
-                'SEARCH_FEEDBACK_CARD': 1,
             },
         },
-    },
-    'requestContext': {
-        'type': 'BROWSE_PAGE',
-        'ssid': '8dq6rnf6400000001736525697358',
-        'sqid': 'xrjvnaszds0000001736525710822',
-    },
-}
-    # response = requests.post('https://1.rome.api.flipkart.com/api/4/page/fetch', cookies=cookies, headers=headers, json=json_data, verify=False)
-
-def main():
-    session = create_session()
-    url = "https://1.rome.api.flipkart.com/api/4/page/fetch"
+        'requestContext': {
+            'type': 'BROWSE_PAGE',
+            'ssid': '8dq6rnf6400000001736525697358',
+            'sqid': 'xrjvnaszds0000001736525710822',
+        },
+    }
+        # response = requests.post('https://1.rome.api.flipkart.com/api/4/page/fetch', cookies=cookies, headers=headers, json=json_data, verify=False)
     response = session.post(url, cookies=cookies, json=json_data, verify=False)
-
     with open("file.json", "w") as f:
         json.dump(response.json(), f)
         f.close()
-
-    with open("file.json", "r") as f:
-        json_obj = json.load(f)
-        f.close()
-
-    itemlist = {}
-
-    for i in json_obj["RESPONSE"]["slots"]:
-        if i["slotType"]!="WIDGET" or "FILTER_SORT_OPTIONS" in str(i["elementId"]):
-            continue
-        else:
-            if "PRODUCT_SUMMARY" not in str(i["elementId"]):
-                break
-            else:
-                for j in i["widget"]["data"]["products"]:
-                    itemlist[str(j["productInfo"]["action"]["params"]["productId"])] = str(j["productInfo"]["action"]["params"]["listingId"])
     
-    
+def main():
+    session = create_session()
+    url = "https://1.rome.api.flipkart.com/api/4/page/fetch"
+
+
     with open("output.txt","a") as f:
-        count = 5
-        for i in itemlist:
-            if count==0:
+        for k in range(1,30):
+            write_data_in_file(url, session, k)
+            with open("file.json", "r") as g:
+                json_obj = json.load(g)
+                g.close()
+
+            if "pageData" not in json_obj["RESPONSE"]:
                 break
-            count-=1
-            jsondata = get_response(i,itemlist[i])
-            f.write(json.dumps(get_product_data(jsondata,i)))
-            f.write("\n")
-            time.sleep(5)
+
+
+            for i in json_obj["RESPONSE"]["slots"]:
+                
+                if i["slotType"]!="WIDGET" or "FILTER_SORT_OPTIONS" in str(i["elementId"]):
+                    continue
+                else:
+                    if "PRODUCT_SUMMARY" not in str(i["elementId"]):
+                        break
+                    else:
+                        for j in i["widget"]["data"]["products"]:
+                            item = {}
+                            j = j["productInfo"]["value"]
+                            if "pricing" not in j:
+                                continue
+                            item["Name"] = j["titles"]["title"]
+                            item["Price"] = j["pricing"]["finalPrice"]["value"]
+                            item["ID"] = j["id"]
+                            item["listingId"] = j["listingId"]
+                            f.write(json.dumps(item))
+                            f.write("\n")
+    
+    
         print("Data Written")
         f.close()
 
